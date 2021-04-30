@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {StyleSheet, Text, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
@@ -6,42 +7,48 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import getPositiveCasesCountAPI from './getDistrictData';
 import getWarningLevelDataAPI from './getCoronaWarningLevel';
 import overview from'./dataOverview';
-// function HomeScreen() {
-//   return (
-//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//       <Text>Home!</Text>
-//     </View>
-//   );
-// }
-//
-// function DistrictChartScreen() {
-//   return (
-//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//       <Text>District</Text>
-//     </View>
-//   );
-// }
-//
-// function VaccinationChartScreen() {
-//   return (
-//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//       <Text>Vaccination</Text>
-//     </View>
-//   );
-// }
+import getReffectiveValue from'./getREffectiveAustria';
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator>
-      <Tab.Screen name="Districts" component={getPositiveCasesCountAPI} />
-
-
-        <Tab.Screen name="RiskLevel" component={getWarningLevelDataAPI} />
-
-          <Tab.Screen name="Overview" component={overview} />
-
+      <Tab.Navigator
+      tabBarOptions={{
+              activeTintColor: '#e91e63',
+            }}
+      >
+      <Tab.Screen name="Overview" component={overview}
+//       options={{
+//           tabBarLabel: 'Overview',
+// tabBarIcon: ({ color, size }) => (
+//   <MaterialCommunityIcons name="home" color={color} size={size} />
+//
+// )
+//         }}
+        />
+      <Tab.Screen name="Districts" component={getPositiveCasesCountAPI}
+      // options={{
+      //     tabBarLabel: 'Districts',
+      //     tabBarIcon: ({ color, size }) => (
+      //       <MaterialCommunityIcons name="plus" color={color} size={size} />
+      //     ) }}
+          />
+      <Tab.Screen name="RiskLevel" component={getWarningLevelDataAPI}
+      // options={{
+      //     tabBarLabel: 'WarningLevel',
+      //     tabBarIcon: ({ color, size }) => (
+      //       <MaterialCommunityIcons name="bell" color={color} size={size} />
+      //     ) }}
+      />
+      <Tab.Screen name="R_Eff" component={getReffectiveValue}
+      // options={{
+      //     tabBarLabel: 'R_Eff',
+      //     tabBarIcon: ({ color, size }) => (
+      //       <MaterialCommunityIcons name="bell" color={color} size={size} />
+      //     ) }}
+      />
       </Tab.Navigator>
     </NavigationContainer>
   );

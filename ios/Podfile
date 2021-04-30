@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'pandemic_awareness' do
+target 'covid_risk' do
   config = use_native_modules!
 
   use_react_native!(
@@ -12,7 +12,7 @@ target 'pandemic_awareness' do
     :hermes_enabled => false
   )
 
-  target 'pandemic_awarenessTests' do
+  target 'covid_riskTests' do
     inherit! :complete
     # Pods for testing
   end
