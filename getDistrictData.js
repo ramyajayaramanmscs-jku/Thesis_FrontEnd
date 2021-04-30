@@ -1,8 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {LineChart} from 'react-native-chart-kit';
-import {Rect, Text as TextSVG, Svg} from 'react-native-svg';
 import DropDownPicker from 'react-native-dropdown-picker';
-import Icon from 'react-native-vector-icons/Feather';
 import {FlatList, StyleSheet, Text, View, Dimensions} from 'react-native';
 import {
   VictoryLine,
@@ -21,23 +18,22 @@ export default function getPositiveCasesCountAPI() {
   const [selectedDistrictName, setSelectedDistrictName] = useState([]);
   const [districtName, setDistrictName] = useState(['Linz-Land']);
   const [year, setYear] = useState('2020');
-  const [interval, setInterval] = useState('Monthly');
+  const [interval, setInterval] = useState('monthly');
   const encodedDistrict=encodeURIComponent(selectedDistrictName);
   const encodedYear=encodeURIComponent(year);
   const encodedInterval=encodeURIComponent(interval);
   useEffect(() => {
-    if(selectedDistrictName){
-      getDistrictData();
-    }
 
-  }, []);
+getDistrictData();
 getDistrictNames();
-  const url =`https://5e34bfc513e5.ngrok.io/api/positivecasesbydistrict/?districtname=${encodedDistrict}&year=${encodedYear}&interval=${encodedInterval}`;
+  }, []);
+
+  const url =`https://79ac898ed115.ngrok.io/api/positivecasesbydistrict/?districtname=${encodedDistrict}&year=${encodedYear}&interval=${encodedInterval}`;
 
   async function getDistrictData() {
     await fetch
     (
-    `https://5e34bfc513e5.ngrok.io/api/positivecasesbydistrict/?districtname=${encodedDistrict}&year=${encodedYear}&interval=${encodedInterval}`,
+    `https://79ac898ed115.ngrok.io/api/positivecasesbydistrict/?districtname=${encodedDistrict}&year=${encodedYear}&interval=${encodedInterval}`,
     )
       .then(response => response.json())
       .then(json =>setDistrictWisePositiveCases(json.data.filter(d => d.Year === encodedYear)))
@@ -45,7 +41,7 @@ getDistrictNames();
       .finally(() => setLoading(false),[selectedDistrictName]);
   }
   async function getDistrictNames() {
-    await fetch('https://5e34bfc513e5.ngrok.io/api/alldistrictnames/')
+    await fetch('https://79ac898ed115.ngrok.io/api/alldistrictnames/')
       .then(response => response.json())
       .then(json => setDistrictName(json))
       .catch(error => console.error(error))
@@ -108,8 +104,6 @@ console.log(encodedDistrict,encodedYear,encodedInterval)
 
           onChangeItem={item => setYear(item.value)}
         />
-        <Text>{districtWisePositiveCases.Month}</Text>
-
 
         <Text>{url}</Text>
         <VictoryChart
@@ -132,7 +126,7 @@ console.log(encodedDistrict,encodedYear,encodedInterval)
               style={{ fontSize: 14}}
               />}
             style={{
-              data: {stroke: '#c43a31', strokeWidth: 3},
+              data: {stroke: '#324ca8', strokeWidth:3  },
               parent: {border: '1px solid #ccc'},
             }}
             data={districtWisePositiveCases}

@@ -131,7 +131,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.pandemic_awareness"
+        applicationId "com.covid_risk"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
