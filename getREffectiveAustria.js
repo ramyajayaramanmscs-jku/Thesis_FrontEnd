@@ -38,7 +38,7 @@ export default function getReffectiveValue() {
   }, []);
   async function getDistrictData() {
     await fetch(
-      `https://79ac898ed115.ngrok.io/api/R_eff_Austria/?year=2020&interval=monthly`,
+      `https://7e2d1f873e89.ngrok.io/api/R_eff_Austria/?year=2020&interval=monthly`,
     )
       .then(response => response.json())
       .then(json => setREffAustria(json.data.filter(d => d.Year === '2020')))

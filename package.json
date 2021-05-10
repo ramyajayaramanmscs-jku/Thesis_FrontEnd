@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^5.11.10",
+    "@react-navigation/material-top-tabs": "^5.3.15",
     "@react-navigation/native": "^5.9.4",
     "react": "17.0.1",
     "react-native": "0.64.0",
@@ -21,9 +22,10 @@
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.1.1",
     "react-native-svg": "^12.1.1",
+    "react-native-tab-view": "^2.16.0",
     "react-native-vector-icons": "^8.1.0",
-    "victory-core": "^35.5.1",
-    "victory-native": "^35.3.2"
+    "victory-core": "^30.0.0",
+    "victory-native": "^33.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.14.0",

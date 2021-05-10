@@ -12,13 +12,13 @@ import {
   VictoryAxis,
   createContainer,
 } from 'victory-native';
-export default function getPositiveCasesCountAPI() {
+export default function getFullyVaccinatedCountAPI() {
   const [loading, setLoading] = useState(null);
-  const [districtWisePositiveCases, setDistrictWisePositiveCases] = useState([]);
+  const [countryWiseVaccCount, setcountryWiseVaccCount] = useState([]);
   const [serverData, setServerData] = useState([]);
   const [selectedDistrictName, setSelectedDistrictName] = useState([]);
   const [districtName, setDistrictName] = useState(['Linz-Land']);
-  const [year, setYear] = useState('2020');
+  const [year, setYear] = useState('2021');
   const [interval, setInterval] = useState('monthly');
   const encodedDistrict=encodeURIComponent(selectedDistrictName);
   const encodedYear=encodeURIComponent(year);
@@ -35,7 +35,7 @@ const [selectedDomain, setSelectedDomain] = useState();
   };
   useEffect(() => {
     const timer = setInterval(() => {
-          getDistrictData();
+          getVaccinationData();
         }, 3000);
 
         return () => clearInterval(timer);
@@ -43,49 +43,36 @@ const [selectedDomain, setSelectedDomain] = useState();
 getDistrictNames();
   }, []);
 
-  const url =`https://7e2d1f873e89.ngrok.io/api/positivecasesbydistrict/?districtname=${encodedDistrict}&year=${encodedYear}&interval=${encodedInterval}`;
+  const url =`https://7e2d1f873e89.ngrok.io/api/Vaccination/?countryname=Austria&year=${encodedYear}&interval=${encodedInterval}`;
 
-  async function getDistrictData() {
+  async function getVaccinationData() {
     await fetch
     (
-    `https://7e2d1f873e89.ngrok.io/api/positivecasesbydistrict/?districtname=${encodedDistrict}&year=${encodedYear}&interval=${encodedInterval}`,
+    `https://7e2d1f873e89.ngrok.io/api/Vaccination/?countryname=Austria&year=${encodedYear}&interval=${encodedInterval}`,
     )
       .then(response => response.json())
-      .then(json =>setDistrictWisePositiveCases(json.data.filter(d => d.Year === encodedYear)))
+      .then(json =>setcountryWiseVaccCount(json.data.filter(d => d.Year === encodedYear)))
       .catch(error => console.error(error))
       .finally(() => setLoading(false),[selectedDistrictName]);
   }
-  async function getDistrictNames() {
-    await fetch('https://79ac898ed115.ngrok.io/api/alldistrictnames/')
-      .then(response => response.json())
-      .then(json => setDistrictName(json))
-      .catch(error => console.error(error))
-      .finally(() => setLoading(false));
-  }
-console.log(encodedDistrict,encodedYear,encodedInterval)
+  // async function getDistrictNames() {
+  //   await fetch('https://79ac898ed115.ngrok.io/api/alldistrictnames/')
+  //     .then(response => response.json())
+  //     .then(json => setDistrictName(json))
+  //     .catch(error => console.error(error))
+  //     .finally(() => setLoading(false));
+  // }
+//console.log(encodedDistrict,encodedYear,encodedInterval)
   if (loading) return 'Loading...';
   return (
     <>
       <View style={{flex: 1, padding: 5}}>
         <Text style={{color: 'blue', fontSize: 16, textAlign: 'center'}}>
-          Positive Covid Cases -District Wise
+          Vaccination Data - Country Wise
         </Text>
       </View>
       <View>
-        <DropDownPicker
-          items={districtName.map(item => ({label: item, value: item}))}
-          defaultValue={'Linz-Land'}
-          placeholder="choose a district"
-          containerStyle={{height: 40}}
-          style={{backgroundColor: '#fafafa'}}
-          itemStyle={{
-            justifyContent: 'flex-start',
-          }}
-          dropDownStyle={{backgroundColor: '#fafafa'}}
-          searchable={true}
-          searchablePlaceholder="Search for a district"
-          onChangeItem={item => setSelectedDistrictName(item.value)}
-        />
+
         <DropDownPicker
           items={[
             {label: 'Monthly', value: 'monthly'},
@@ -125,18 +112,18 @@ console.log(encodedDistrict,encodedYear,encodedInterval)
           theme={VictoryTheme.material}
           width={400}
           height={500}
-          padding={{top: 200, left: 30, right: 30, bottom: 50}}
+          padding={{top: 100, left: 100, right: 30, bottom: 50}}
           containerComponent={
             <VictoryZoomVoronoiContainer
               zoomDimension="x"
               zoomDomain={zoomDomain}
               onZoomDomainChange={handleZoom}
               labels={({datum}) =>
-                `cases: ${datum.AnzahlFaelle},month:${datum.Month},district:${datum.DistrictName}`}
+                `vaccinated: ${datum.People_fully_vaccinated},month:${datum.Month},district:${datum.Country_Region}`}
             />
 
           }>
-          <VictoryAxis dependentAxis label={'Positive Cases'} />
+          <VictoryAxis dependentAxis label={'People_fully_vaccinated'} />
         <VictoryAxis independentAxis label={'Month'} />
           <VictoryLine
             labelComponent={<VictoryTooltip
@@ -147,10 +134,10 @@ console.log(encodedDistrict,encodedYear,encodedInterval)
               data: {stroke: 'teal', strokeWidth:3  },
               parent: {border: '1px solid #ccc'},
             }}
-            data={districtWisePositiveCases}
+            data={countryWiseVaccCount}
             x={'Month'}
-            y={'AnzahlFaelle'}
-            labels={({datum}) => datum.AnzahlFaelle}
+            y={'People_fully_vaccinated'}
+            labels={({datum}) => datum.People_fully_vaccinated}
             interpolation="catmullRom"
           />
         </VictoryChart>
@@ -177,9 +164,9 @@ console.log(encodedDistrict,encodedYear,encodedInterval)
             style={{
               data: {stroke: 'teal'},
             }}
-            data={districtWisePositiveCases}
+            data={countryWiseVaccCount}
             x={'Month'}
-            y={'AnzahlFaelle'}
+            y={'People_fully_vaccinated'}
             interpolation="catmullRom"
           />
         </VictoryChart>

@@ -8,12 +8,14 @@ import getPositiveCasesCountAPI from './getDistrictData';
 import getWarningLevelDataAPI from './getCoronaWarningLevel';
 import overview from'./dataOverview';
 import getReffectiveValue from'./getREffectiveAustria';
+import getFullyVaccinatedCountAPI from './getVaccinationData';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
+
       <Tab.Navigator
       tabBarOptions={{
               activeTintColor: '#e91e63',
@@ -49,6 +51,9 @@ export default function App() {
       //       <MaterialCommunityIcons name="bell" color={color} size={size} />
       //     ) }}
       />
+      <Tab.Screen name="Vaccination" component={getFullyVaccinatedCountAPI}
+      />
+
       </Tab.Navigator>
     </NavigationContainer>
   );
