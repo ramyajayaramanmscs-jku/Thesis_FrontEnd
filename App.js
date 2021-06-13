@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import getPositiveCasesCountAPI from './getDistrictData';
@@ -10,6 +10,8 @@ import getWarningLevelDataAPI from './getCoronaWarningLevel';
 import overview from './dataOverview';
 import getReffectiveValue from './getREffectiveAustria';
 import getFullyVaccinatedCountAPI from './getVaccinationData';
+import {TabView, SceneMap} from 'react-native-tab-view';
+import getAllCharts from './charts';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -38,6 +40,22 @@ export default function App() {
           }}
         />
         <Tab.Screen
+          name="Charts"
+          component={getAllCharts}
+          options={{
+            tabBarLabel: 'Charts',
+            tabBarColor: '#008787',
+            tabBarIcon: ({color}) => (
+              <MaterialCommunityIcons
+                name="chart-line"
+                color={color}
+                size={26}
+              />
+            ),
+          }}
+        />
+
+        {/*  <Tab.Screen
           name="Cases"
           component={getPositiveCasesCountAPI}
           options={{
@@ -51,7 +69,7 @@ export default function App() {
               />
             ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name="WarnLevel"
           component={getWarningLevelDataAPI}
@@ -67,7 +85,7 @@ export default function App() {
             ),
           }}
         />
-        <Tab.Screen
+        {/*  <Tab.Screen
           name="R_Eff"
           component={getReffectiveValue}
           options={{
@@ -92,7 +110,7 @@ export default function App() {
               <MaterialCommunityIcons name="needle" color={color} size={26} />
             ),
           }}
-        />
+        /> */}
       </Tab.Navigator>
     </NavigationContainer>
   );

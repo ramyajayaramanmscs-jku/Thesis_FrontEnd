@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
+  Pressable,
+  Modal,
   Dimensions,
 } from 'react-native';
 import {
@@ -20,18 +21,19 @@ import {
   VictoryAxis,
   createContainer,
 } from 'victory-native';
-import {Header} from 'react-native-elements';
+import {Button, Header, Icon} from 'react-native-elements';
 import RadioForm, {
   RadioButton,
   RadioButtonInput,
   RadioButtonLabel,
 } from 'react-native-simple-radio-button';
 import {ChonseSelect} from 'react-native-chonse-select';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 export default function getFullyVaccinatedCountAPI() {
+  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(null);
   const [countryWiseVaccCount, setcountryWiseVaccCount] = useState([]);
-
   const [selectedStateName, setSelectedStateName] = useState([]);
   const [stateName, setStateName] = useState(['Wien']);
   const [year, setYear] = useState('2021');
@@ -57,7 +59,7 @@ export default function getFullyVaccinatedCountAPI() {
   useEffect(() => {
     async function getVaccinationData() {
       await fetch(
-        `https://5b955fcd9680.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
+        `https://b9078716b760.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setcountryWiseVaccCount(json.data))
@@ -65,7 +67,7 @@ export default function getFullyVaccinatedCountAPI() {
         .finally(() => setLoading(false), []);
     }
     async function getDistrictNames() {
-      await fetch('https://5b955fcd9680.ngrok.io/api/alldistrictnames/')
+      await fetch('https://b9078716b760.ngrok.io/alldistrictnames/')
         .then(response => response.json())
         .then(json => setStateName(json))
         .catch(error => console.error(error))
@@ -75,7 +77,7 @@ export default function getFullyVaccinatedCountAPI() {
     // getDistrictNames();
   }, [url]);
 
-  const url1 = `https://5b955fcd9680.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`;
+  const url1 = `https://b9078716b760.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`;
 
   const updateUrl = () => {
     if ((year != null) & (interval != null))
@@ -107,12 +109,12 @@ export default function getFullyVaccinatedCountAPI() {
       label: 'yearly',
     },
   ];
-
   // console.log(encodedDistrict, encodedYear, encodedInterval);
   if (loading) return 'Loading...';
   return (
-    <View style={styles.container}>
-      <Header
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        {/* <Header
         backgroundColor="#005fff"
         leftComponent={{icon: 'menu', color: '#fff'}}
         centerComponent={{
@@ -126,106 +128,147 @@ export default function getFullyVaccinatedCountAPI() {
           icon: 'settings',
           color: '#fff',
         }}
-      />
+      /> */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            //Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={{padding: 3}}>
+                <Text style={{padding: 3}}>Choose State:</Text>
 
-      <DropDownPicker
-        items={stateName.map(item => ({label: item, value: item}))}
-        defaultValue={'Oberösterreich'}
-        placeholder="choose a district"
-        containerStyle={{height: 40}}
-        style={{backgroundColor: '#fafafa'}}
-        itemStyle={{
-          justifyContent: 'flex-start',
-        }}
-        dropDownStyle={{backgroundColor: '#fafafa'}}
-        searchable={true}
-        searchablePlaceholder="Search for a district"
-        onChangeItem={item => setSelectedStateName(item.value)}
-      />
-
-      <Text>Choose Data Interval:</Text>
-      <ChonseSelect
-        height={35}
-        style={{marginLeft: 20, marginBottom: 10}}
-        data={dataInterval}
-        initValue={interval}
-        onPress={item => setInterval(item.value)}
-      />
-      {<Button title="chart Data" color="#005fff" onPress={updateUrl} />}
-      <Text>{url1}</Text>
-      <VictoryChart
-        theme={VictoryTheme.material}
-        width={400}
-        height={350}
-        padding={{top: 50, left: 90, right: 30, bottom: 50}}
-        containerComponent={
-          <VictoryZoomVoronoiContainer
-            zoomDimension="x"
-            zoomDomain={zoomDomain}
-            onZoomDomainChange={handleZoom}
-            labels={({datum}) =>
-              `vaccinated: ${datum.GemeldeteImpfungenLaender},Interval:${datum.Interval}`
-            }
-          />
-        }>
-        <VictoryAxis fixLabelOverlap />
-        <VictoryAxis dependentAxis />
-        <VictoryAxis
-          dependentAxis
-          label={'Vaccination Count'}
-          style={{
-            axis: {stroke: 'black'},
-            ticks: {stroke: 'purple', size: 5},
-            axisLabel: {padding: 80},
+                <DropDownPicker
+                  items={stateName.map(item => ({label: item, value: item}))}
+                  defaultValue={'Oberösterreich'}
+                  placeholder="choose a state"
+                  containerStyle={{height: 40}}
+                  style={{backgroundColor: '#fafafa'}}
+                  itemStyle={{
+                    justifyContent: 'flex-start',
+                  }}
+                  dropDownStyle={{backgroundColor: '#fafafa'}}
+                  searchable={true}
+                  searchablePlaceholder="Search for a state"
+                  onChangeItem={item => setSelectedStateName(item.value)}
+                />
+              </View>
+              <View style={{padding: 3}}>
+                <Text style={{padding: 3}}>Choose Data Interval:</Text>
+                <ChonseSelect
+                  height={35}
+                  data={dataInterval}
+                  initValue={interval}
+                  onPress={item => setInterval(item.value)}
+                />
+              </View>
+              <View style={styles.fixToText}>
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}>
+                  <Text style={styles.textStyle}>Hide Modal</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  color="#005fff"
+                  onPress={updateUrl}>
+                  <Text style={styles.textStyle}>chart data</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Button
+          buttonStyle={styles.normalButton}
+          type="solid"
+          icon={{
+            name: 'settings',
+            size: 15,
+            color: 'white',
           }}
+          iconRight="true"
+          title="chart"
+          onPress={() => setModalVisible(true)}
         />
-        <VictoryAxis
-          independentAxis
-          label={'Interval'}
-          style={{
-            axis: {stroke: 'black'},
-            ticks: {stroke: 'purple', size: 5},
-            axisLabel: {padding: 30},
-          }}
-        />
-        <VictoryGroup colorScale={['purple']}>
-          <VictoryBar
-            data={countryWiseVaccCount}
-            x={'Interval'}
-            y={'GemeldeteImpfungenLaender'}
+        <Text>{url1}</Text>
+        <VictoryChart
+          theme={VictoryTheme.material}
+          width={400}
+          height={350}
+          padding={{top: 50, left: 90, right: 30, bottom: 100}}
+          containerComponent={
+            <VictoryZoomVoronoiContainer
+              zoomDimension="x"
+              zoomDomain={zoomDomain}
+              onZoomDomainChange={handleZoom}
+              labels={({datum}) =>
+                `vaccinated: ${datum.GemeldeteImpfungenLaender},Interval:${datum.Interval}`
+              }
+            />
+          }>
+          <VictoryAxis fixLabelOverlap />
+          <VictoryAxis dependentAxis />
+          <VictoryAxis
+            dependentAxis
+            label={'Vaccination Count'}
+            style={{
+              axis: {stroke: 'black'},
+              ticks: {stroke: 'purple', size: 5},
+              axisLabel: {padding: 80},
+            }}
           />
-        </VictoryGroup>
-      </VictoryChart>
-      <VictoryChart
-        width={350}
-        height={100}
-        scale={{x: 'linear'}}
-        padding={{top: 0, left: 30, right: 30, bottom: 45}}
-        containerComponent={
-          <VictoryBrushContainer
-            responsive={false}
-            brushDimension="x"
-            brushStyle={{fill: 'teal', opacity: 0.2}}
-            brushDomain={selectedDomain}
-            onBrushDomainChange={handleBrush}
+          <VictoryAxis
+            independentAxis
+            label={'Interval'}
+            style={{
+              axis: {stroke: 'black'},
+              ticks: {stroke: 'purple', size: 5},
+              axisLabel: {padding: 30},
+            }}
           />
-        }>
-        {/*  <VictoryAxis
+          <VictoryGroup colorScale={['purple']}>
+            <VictoryBar
+              data={countryWiseVaccCount}
+              x={'Interval'}
+              y={'GemeldeteImpfungenLaender'}
+            />
+          </VictoryGroup>
+        </VictoryChart>
+        <VictoryChart
+          width={350}
+          height={100}
+          scale={{x: 'linear'}}
+          padding={{top: 0, left: 30, right: 30, bottom: 45}}
+          containerComponent={
+            <VictoryBrushContainer
+              responsive={false}
+              brushDimension="x"
+              brushStyle={{fill: 'teal', opacity: 0.2}}
+              brushDomain={selectedDomain}
+              onBrushDomainChange={handleBrush}
+            />
+          }>
+          {/*  <VictoryAxis
           tickValues={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
           tickFormat={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
           label="Interval"
         /> */}
-        <VictoryBar
-          style={{
-            data: {stroke: 'teal'},
-          }}
-          data={countryWiseVaccCount}
-          x={'Interval'}
-          y={'GemeldeteImpfungenLaender'}
-          interpolation="catmullRom"
-        />
-      </VictoryChart>
-    </View>
+          <VictoryBar
+            style={{
+              data: {stroke: 'teal'},
+            }}
+            data={countryWiseVaccCount}
+            x={'Interval'}
+            y={'GemeldeteImpfungenLaender'}
+            interpolation="catmullRom"
+          />
+        </VictoryChart>
+      </View>
+    </SafeAreaProvider>
   );
 }
 
@@ -235,6 +278,55 @@ const styles = StyleSheet.create({
 
     paddingTop: 13,
     backgroundColor: '#eeeeee',
+  },
+  centeredView: {
+    flex: 1,
+    //justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 250,
+    //padding: '10',
+  },
+  fixToText: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 5,
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    //alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: 320,
+  },
+  button: {
+    width: 100,
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  normalButton: {
+    width: 100,
+    borderRadius: 20,
+    padding: 10,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   sectionContainer: {
     marginTop: 32,
