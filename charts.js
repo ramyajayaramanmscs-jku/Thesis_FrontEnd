@@ -22,7 +22,7 @@ export default function getAllCharts() {
   const [routes] = React.useState([
     {key: 'cases', title: 'Cases'},
     {key: 'vaccine', title: 'Vaccine'},
-    {key: 'reff', title: 'REff'},
+    {key: 'reff', title: 'R-Effective'},
   ]);
 
   const renderScene = SceneMap({

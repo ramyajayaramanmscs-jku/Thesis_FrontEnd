@@ -1,204 +1,157 @@
 import React, {useState, useEffect} from 'react';
-import DropDownPicker from 'react-native-dropdown-picker';
 import {FlatList, StyleSheet, Text, View, Dimensions} from 'react-native';
-import {
-  VictoryLine,
-  VictoryChart,
-  VictoryTheme,
-  VictoryZoomContainer,
-  VictoryTooltip,
-  VictoryBrushContainer,
-  VictoryVoronoiContainer,
-  VictoryAxis,
-  createContainer,
-} from 'victory-native';
-export default function getPositiveCasesCountAPI() {
-  const [loading, setLoading] = useState(null);
-  const [districtWiseWarningLevel, setDistrictWiseWarningLevel] = useState([]);
-  const [serverData, setServerData] = useState([]);
-  const [selectedDistrictName, setSelectedDistrictName] = useState([]);
-  const [districtName, setDistrictName] = useState(['Linz-Land']);
-  const [year, setYear] = useState('2020');
-  const [interval, setInterval] = useState('monthly');
-  const encodedDistrict = encodeURIComponent(selectedDistrictName);
-  const encodedYear = encodeURIComponent(year);
-  const encodedInterval = encodeURIComponent(interval);
-  //brush and zoomDomain
-  const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
-  const [selectedDomain, setSelectedDomain] = useState();
-  const [zoomDomain, setZoomDomain] = useState();
-  const handleZoom = domain => {
-    setSelectedDomain(domain);
-  };
-  const handleBrush = domain => {
-    setZoomDomain(domain);
-  };
+import {SearchBar} from 'react-native-elements';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+
+export default function getWarningLevelDataAPI() {
+  const [districtName, setDistrictName] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  const [masterDataSource, setMasterDataSource] = useState([]);
+  const [selecteddate, setSelectedDate] = useState('2021-06-10');
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      getDistrictData();
-    }, 3000);
-
-    return () => clearInterval(timer);
-
-    getDistrictNames();
-    parseData();
-  }, []);
-
-  async function getDistrictData() {
-    await fetch(
-      'https://corona-ampel.gv.at/sites/corona-ampel.gv.at/files/assets/Warnstufen_Corona_Ampel_aktuell.json',
-    )
-      .then(response => response.json())
-      .then(json =>
-        setDistrictWiseWarningLevel(
-          json[0].Warnstufen.filter(
-            d => d.Name == ['Linz(Stadt)' || 'Wels(Stadt)'],
-          ),
-        ),
-      )
-      .catch(error => console.error(error))
-      .finally(() => setLoading(false), []);
-  }
-  // async function getDistrictNames() {
-  //   await fetch('https://79ac898ed115.ngrok.io/api/alldistrictnames/')
-  //     .then(response => response.json())
-  //     .then(json => setDistrictName(json))
-  //     .catch(error => console.error(error))
-  //     .finally(() => setLoading(false));
-  // }
-  function parseData() {
-    var data = [
-      {
-        date: '',
-        warnlevel: '',
-      },
-    ];
-    //  var date=[]
-    // var warnlevel=[]
-    for (var i = 0; i < districtWiseWarningLevel.length; i++) {
-      data.date = districtWiseWarningLevel[i].Stand;
-      const today = Date.now();
-
-      console.log(
-        new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        }).format(date),
-      );
-    }
-    for (var j = 0; j < districtWiseWarningLevel[0].Warnstufen.length; j++) {
-      if (array[0].Warnstufen[j].Name === 'Linz(Stadt)') {
-        data.warnlevel = districtWiseWarningLevel[0].Warnstufen[j].Warnstufe;
+    if (loading) {
+      async function getDistrictNames() {
+        await fetch(
+          `https://ecfd241ea67c.ngrok.io/api/warnLevelRegion/?date=${selecteddate}`,
+        )
+          .then(response => response.json())
+          .then(json => setDistrictName(json))
+          .catch(error => console.error(error))
+          .finally(() => setLoading(false));
       }
+
+      async function getWarnLevelDates() {
+        await fetch('https://ecfd241ea67c.ngrok.io/api/dropdownvalues')
+          .then(dropdownresponse => dropdownresponse.json())
+          .then(dropdownresponseJson => {
+            setFilteredDataSource(dropdownresponseJson.WarnLevelDates);
+            setMasterDataSource(dropdownresponseJson.WarnLevelDates);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+      getDistrictNames();
+      getWarnLevelDates();
     }
-    console.log('App started');
-    console.log(date);
-    console.log(warnlevel);
-  }
-  console.log(districtWiseWarningLevel);
-  if (loading) return 'Loading...';
-  return (
-    <>
-      <View style={styles.container}>
-        <Text style={{color: 'blue', fontSize: 16, textAlign: 'center'}}>
-          Corona Warning Level -District Wise
+  }, [loading]);
+
+  const searchFilterFunction = text => {
+    if (text) {
+      const newData = masterDataSource.filter(function (item) {
+        const itemData = item.Dates ? item.Dates : '';
+
+        return itemData.indexOf(itemData) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
+    }
+  };
+  const ItemView = ({item}) => {
+    return (
+      <View>
+        <Text style={styles.itemStyle} onPress={() => getItem(item)}>
+          {item.Dates}
         </Text>
       </View>
+    );
+  };
+  const ItemSeparatorView = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: '100%',
+          backgroundColor: '#C8C8C8',
+        }}
+      />
+    );
+  };
+  const getItem = item => {
+    setSelectedDate(item.Dates);
+    setLoading(true);
+  };
+  if (loading)
+    return (
       <View>
-        <VictoryChart
-          theme={VictoryTheme.material}
-          width={400}
-          height={400}
-          padding={{top: 100, left: 50, right: 50, bottom: 50}}
-          containerComponent={
-            <VictoryZoomVoronoiContainer
-              zoomDimension="x"
-              zoomDomain={zoomDomain}
-              onZoomDomainChange={handleZoom}
-              labels={({datum}) =>
-                `name:${datum.Name},district:${datum.Warnstufe}`
-              }
-            />
-          }>
-          <VictoryAxis
-            dependentAxis
-            label="Warning Level"
-            style={{
-              axisLabel: {padding: 40},
-            }}
-          />
-          <VictoryAxis
-            independentAxis
-            label="Month"
-            style={{
-              axisLabel: {padding: 40},
-            }}
-          />
-          <VictoryLine
-            labelComponent={
-              <VictoryTooltip renderInPortal={false} style={{fontSize: 14}} />
-            }
-            style={{
-              data: {stroke: 'teal', strokeWidth: 3},
-              parent: {border: '1px solid #ccc'},
-            }}
-            data={districtWiseWarningLevel}
-            x={'Name'}
-            y={'Warnstufe'}
-            interpolation="catmullRom"
-          />
-        </VictoryChart>
-        <VictoryChart
-          width={350}
-          height={100}
-          scale={{x: 'linear'}}
-          padding={{top: 0, left: 30, right: 30, bottom: 45}}
-          containerComponent={
-            <VictoryBrushContainer
-              responsive={false}
-              brushDimension="x"
-              brushStyle={{fill: 'teal', opacity: 0.2}}
-              brushDomain={selectedDomain}
-              onBrushDomainChange={handleBrush}
-            />
-          }>
-          <VictoryLine
-            style={{
-              data: {stroke: 'teal'},
-            }}
-            data={districtWiseWarningLevel}
-            x={'Name'}
-            y={'Warnstufe'}
-            interpolation="catmullRom"
-          />
-        </VictoryChart>
+        <Text>Loading...</Text>
       </View>
-    </>
+    );
+  console.log(selecteddate);
+  return (
+    <View style={styles.container}>
+      <SearchBar
+        style={styles.searchbarstyle}
+        round
+        searchIcon={{size: 24}}
+        onChangeText={text => searchFilterFunction(text)}
+        onClear={text => searchFilterFunction('')}
+        placeholder="choose a date..."
+        value={search}
+        icon="search"
+      />
+      <FlatList
+        style={{
+          padding: 45,
+          paddingTop: 10,
+          paddingBottom: 10,
+          width: '100%',
+          height: '10%',
+          borderRadius: 20,
+          border: 1,
+          backgroundColor: '#d4d4d4',
+          flexGrow: 0,
+        }}
+        data={filteredDataSource}
+        keyExtractor={(item, index) => index.toString()}
+        ItemSeparatorComponent={ItemSeparatorView}
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        renderItem={ItemView}
+      />
+      <MapView
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        region={{
+          latitude: 47.82326,
+          longitude: 13.84644,
+          latitudeDelta: 6.5,
+          longitudeDelta: 1.5,
+        }}>
+        {districtName.map((report, i) => (
+          <Marker
+            key={i}
+            coordinate={{
+              latitude: report.Latitude,
+              longitude: report.Longitude,
+            }}
+            pinColor={report.MarkerColor}
+            title={report.cityName}></Marker>
+        ))}
+      </MapView>
+    </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 30,
+    height: '100%',
+  },
+  map: {
     flex: 1,
-
-    paddingTop: 13,
-    backgroundColor: '#eeeeee',
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  itemStyle: {
+    paddingLeft: 50,
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  searchbarstyle: {
+    height: 30,
   },
 });

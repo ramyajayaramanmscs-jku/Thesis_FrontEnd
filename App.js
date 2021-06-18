@@ -13,6 +13,7 @@ import getFullyVaccinatedCountAPI from './getVaccinationData';
 import {TabView, SceneMap} from 'react-native-tab-view';
 import getAllCharts from './charts';
 
+import modelSimulationWithParameters from './modelSimulation';
 const Tab = createMaterialBottomTabNavigator();
 
 export default function App() {
@@ -54,22 +55,6 @@ export default function App() {
             ),
           }}
         />
-
-        {/*  <Tab.Screen
-          name="Cases"
-          component={getPositiveCasesCountAPI}
-          options={{
-            tabBarLabel: 'Cases',
-            tabBarColor: '#ff87ff',
-            tabBarIcon: ({color}) => (
-              <MaterialCommunityIcons
-                name="chart-line"
-                color={color}
-                size={26}
-              />
-            ),
-          }}
-        /> */}
         <Tab.Screen
           name="WarnLevel"
           component={getWarningLevelDataAPI}
@@ -78,39 +63,29 @@ export default function App() {
             tabBarColor: '#d78700',
             tabBarIcon: ({color}) => (
               <MaterialCommunityIcons
-                name="alert-circle"
+                name="map-marker-alert-outline"
                 color={color}
                 size={26}
               />
             ),
           }}
         />
-        {/*  <Tab.Screen
-          name="R_Eff"
-          component={getReffectiveValue}
+
+        <Tab.Screen
+          name="Model"
+          component={modelSimulationWithParameters}
           options={{
-            tabBarLabel: 'R_Eff',
-            tabBarColor: '#d75fff',
+            tabBarLabel: 'Model',
+            tabBarColor: '#6932a8',
             tabBarIcon: ({color}) => (
               <MaterialCommunityIcons
-                name="account-multiple-remove"
+                name="thought-bubble"
                 color={color}
                 size={26}
               />
             ),
           }}
         />
-        <Tab.Screen
-          name="Vaccination"
-          component={getFullyVaccinatedCountAPI}
-          options={{
-            tabBarLabel: 'Vaccination',
-            tabBarColor: '#008787',
-            tabBarIcon: ({color}) => (
-              <MaterialCommunityIcons name="needle" color={color} size={26} />
-            ),
-          }}
-        /> */}
       </Tab.Navigator>
     </NavigationContainer>
   );

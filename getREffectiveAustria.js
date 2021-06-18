@@ -53,7 +53,7 @@ export default function getReffectiveValue() {
   useEffect(() => {
     async function getDistrictData() {
       await fetch(
-        `https://b9078716b760.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`,
+        `https://ecfd241ea67c.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setREffAustria(json.data))
@@ -61,7 +61,7 @@ export default function getReffectiveValue() {
         .finally(() => setLoading(false), []);
     }
     async function getDistrictNames() {
-      await fetch('https://b9078716b760.ngrok.io/api/alldistrictnames/')
+      await fetch('https://ecfd241ea67c.ngrok.io/api/dropdownvalues')
         .then(response => response.json())
         .then(json => setDistrictName(json))
         .catch(error => console.error(error))
@@ -69,7 +69,7 @@ export default function getReffectiveValue() {
     }
     getDistrictData();
   }, [url]);
-  const sampleurl = `https://b9078716b760.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`;
+  const sampleurl = `https://ecfd241ea67c.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`;
 
   const updateUrl = () => {
     if ((year != null) & (interval != null))
@@ -202,8 +202,8 @@ export default function getReffectiveValue() {
             title="chart"
             onPress={() => setModalVisible(true)}
           />
-          <Text>{sampleurl}</Text>
-
+          {/*   <Text>{sampleurl}</Text>
+           */}
           <View>
             <VictoryChart
               theme={VictoryTheme.material}

@@ -59,7 +59,7 @@ export default function getFullyVaccinatedCountAPI() {
   useEffect(() => {
     async function getVaccinationData() {
       await fetch(
-        `https://b9078716b760.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
+        `https://ecfd241ea67c.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setcountryWiseVaccCount(json.data))
@@ -67,7 +67,7 @@ export default function getFullyVaccinatedCountAPI() {
         .finally(() => setLoading(false), []);
     }
     async function getDistrictNames() {
-      await fetch('https://b9078716b760.ngrok.io/alldistrictnames/')
+      await fetch('https://ecfd241ea67c.ngrok.io/api/dropdownvalues')
         .then(response => response.json())
         .then(json => setStateName(json))
         .catch(error => console.error(error))
@@ -77,7 +77,7 @@ export default function getFullyVaccinatedCountAPI() {
     // getDistrictNames();
   }, [url]);
 
-  const url1 = `https://b9078716b760.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`;
+  const url1 = `https://ecfd241ea67c.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`;
 
   const updateUrl = () => {
     if ((year != null) & (interval != null))
@@ -194,7 +194,7 @@ export default function getFullyVaccinatedCountAPI() {
           title="chart"
           onPress={() => setModalVisible(true)}
         />
-        <Text>{url1}</Text>
+        {/*  <Text>{url1}</Text> */}
         <VictoryChart
           theme={VictoryTheme.material}
           width={400}
@@ -242,7 +242,7 @@ export default function getFullyVaccinatedCountAPI() {
           width={350}
           height={100}
           scale={{x: 'linear'}}
-          padding={{top: 0, left: 30, right: 30, bottom: 45}}
+          padding={{top: 10, left: 80, right: 30, bottom: 45}}
           containerComponent={
             <VictoryBrushContainer
               responsive={false}
