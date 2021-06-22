@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {FlatList, StyleSheet, Text, View, Dimensions} from 'react-native';
-import {SearchBar} from 'react-native-elements';
+import {SearchBar, Card} from 'react-native-elements';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 
 export default function getWarningLevelDataAPI() {
@@ -10,13 +10,13 @@ export default function getWarningLevelDataAPI() {
   const [search, setSearch] = useState('');
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [masterDataSource, setMasterDataSource] = useState([]);
-  const [selecteddate, setSelectedDate] = useState('2021-06-10');
+  const [selecteddate, setSelectedDate] = useState(['2021-06-17']);
 
   useEffect(() => {
     if (loading) {
       async function getDistrictNames() {
         await fetch(
-          `https://ecfd241ea67c.ngrok.io/api/warnLevelRegion/?date=${selecteddate}`,
+          `https://1102c8a2eae3.ngrok.io/api/warnLevelRegion/?date=${selecteddate}`,
         )
           .then(response => response.json())
           .then(json => setDistrictName(json))
@@ -25,7 +25,7 @@ export default function getWarningLevelDataAPI() {
       }
 
       async function getWarnLevelDates() {
-        await fetch('https://ecfd241ea67c.ngrok.io/api/dropdownvalues')
+        await fetch('https://1102c8a2eae3.ngrok.io/api/dropdownvalues')
           .then(dropdownresponse => dropdownresponse.json())
           .then(dropdownresponseJson => {
             setFilteredDataSource(dropdownresponseJson.WarnLevelDates);
@@ -87,35 +87,32 @@ export default function getWarningLevelDataAPI() {
   console.log(selecteddate);
   return (
     <View style={styles.container}>
-      <SearchBar
-        style={styles.searchbarstyle}
-        round
-        searchIcon={{size: 24}}
-        onChangeText={text => searchFilterFunction(text)}
-        onClear={text => searchFilterFunction('')}
-        placeholder="choose a date..."
-        value={search}
-        icon="search"
-      />
-      <FlatList
-        style={{
-          padding: 45,
-          paddingTop: 10,
-          paddingBottom: 10,
-          width: '100%',
-          height: '10%',
-          borderRadius: 20,
-          border: 1,
-          backgroundColor: '#d4d4d4',
-          flexGrow: 0,
-        }}
-        data={filteredDataSource}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={ItemSeparatorView}
-        initialNumToRender={5}
-        maxToRenderPerBatch={5}
-        renderItem={ItemView}
-      />
+      {/* <SearchBar
+          style={styles.searchbarstyle}
+          round
+          searchIcon={{size: 24}}
+          onChangeText={text => searchFilterFunction(text)}
+          onClear={text => searchFilterFunction('')}
+          placeholder="choose a date..."
+          value={search}
+          icon="search"
+        /> */}
+      <Card containerStyle={styles.cardStyle}>
+        <Card.Title style={styles.cardTitle}>
+          Corona Warning Level : {selecteddate}
+        </Card.Title>
+        <Text>Choose a date</Text>
+        <FlatList
+          style={styles.flatListStyle}
+          data={filteredDataSource}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={ItemSeparatorView}
+          initialNumToRender={5}
+          maxToRenderPerBatch={5}
+          renderItem={ItemView}
+        />
+      </Card>
+
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -141,7 +138,7 @@ export default function getWarningLevelDataAPI() {
 }
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 30,
+    paddingTop: 16,
     height: '100%',
   },
   map: {
@@ -153,5 +150,32 @@ const styles = StyleSheet.create({
   },
   searchbarstyle: {
     height: 30,
+  },
+  inputParametersContainer: {
+    paddingTop: 20,
+  },
+  cardStyle: {
+    paddingTop: 10,
+    borderRadius: 20,
+    height: 140,
+    width: 380,
+    marginRight: 0,
+    marginLeft: 5,
+    borderColor: 'lightgrey',
+  },
+  cardTitle: {
+    color: '#0087ff',
+    fontSize: 15,
+  },
+  flatListStyle: {
+    padding: 45,
+    paddingTop: 10,
+    paddingBottom: 10,
+    width: '100%',
+    height: '60%',
+    borderRadius: 20,
+    // border: 1,
+    backgroundColor: '#d4d4d4',
+    flexGrow: 0,
   },
 });

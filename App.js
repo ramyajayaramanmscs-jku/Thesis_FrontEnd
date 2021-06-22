@@ -17,6 +17,7 @@ import modelSimulationWithParameters from './modelSimulation';
 const Tab = createMaterialBottomTabNavigator();
 
 export default function App() {
+  
   return (
     <NavigationContainer>
       <Tab.Navigator

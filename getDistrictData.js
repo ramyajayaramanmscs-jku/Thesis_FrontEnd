@@ -38,13 +38,13 @@ export default function getPositiveCasesCountAPI() {
     [],
   );
   const [selectedDistrictName, setSelectedDistrictName] = useState([]);
-  const [districtName, setDistrictName] = useState(['Linz-Land']);
-  const [year, setYear] = useState('2020');
-  const [interval, setInterval] = useState('monthly');
+  const [districtNameList, setDistrictName] = useState(['Linz-Land']);
+  const [year, setYear] = useState('2021');
+  const [interval, setInterval] = useState('Monthly');
   const [url, setUrl] = useState({
     districtName: 'Linz-Land',
     year: 2021,
-    interval: 'monthly',
+    interval: 'Monthly',
   });
   /* const encodedDistrict = encodeURIComponent(selectedDistrictName);
   const encodedYear = encodeURIComponent(year);
@@ -63,7 +63,7 @@ export default function getPositiveCasesCountAPI() {
   useEffect(() => {
     async function getDistrictData() {
       await fetch(
-        `https://f502bb63a406.ngrok.io/api/positivecasesbydistrict/?districtname=${url.districtName}&year=${url.year}&interval=${url.interval}`,
+        `https://527e7d26efd6.ngrok.io/api/positivecasesbydistrict/?districtname=${url.districtName}&year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setDistrictWisePositiveCases(json.data))
@@ -71,13 +71,14 @@ export default function getPositiveCasesCountAPI() {
         .finally(() => setLoading(false), [selectedDistrictName]);
     }
     async function getDistrictNames() {
-      await fetch('https://f502bb63a406.ngrok.io/api/dropdownvalues')
+      await fetch('https://527e7d26efd6.ngrok.io/api/dropdownvalues')
         .then(response => response.json())
-        .then(json => setDistrictName(json))
+        .then(json => setDistrictName(json.Districts))
         .catch(error => console.error(error))
         .finally(() => setLoading(false));
     }
     getDistrictData();
+    getDistrictNames();
   }, [url]);
 
   // const sampleurl = `https://ecfd241ea67c.ngrok.io/api/positivecasesbydistrict/?districtname=${url.districtName}&year=${url.year}&interval=${url.interval}`;
@@ -86,12 +87,12 @@ export default function getPositiveCasesCountAPI() {
       setUrl(url => {
         return {
           ...url,
-          districtName: 'Linz-Land',
+          districtName: selectedDistrictName,
           year: year,
           interval: interval,
         };
       });
-    if (interval == 'yearly') {
+    if (interval == 'Yearly') {
       setShowLineChart(false);
     } else {
       setShowLineChart(true);
@@ -104,24 +105,24 @@ export default function getPositiveCasesCountAPI() {
 
   const dataInterval = [
     {
-      value: 'weekly',
-      label: 'weekly',
+      value: 'Weekly',
+      label: 'week',
     },
     {
-      value: 'monthly',
-      label: 'monthly',
+      value: 'Monthly',
+      label: 'month',
     },
     {
-      value: 'yearly',
-      label: 'yearly',
+      value: 'Yearly',
+      label: 'year',
     },
   ];
-  var data = districtWisePositiveCases.map(function (item) {
+  /* var data = districtWisePositiveCases.map(function (item) {
     return {
       anzahlfaelle: item.AnzahlFaelle,
     };
   });
-  console.log(data);
+  console.log(data); */
   function renderElement() {
     if (url.interval == 'yearly') return;
     <View>
@@ -147,7 +148,6 @@ export default function getPositiveCasesCountAPI() {
               transparent={true}
               visible={modalVisible}
               onRequestClose={() => {
-                //Alert.alert('Modal has been closed.');
                 setModalVisible(!modalVisible);
               }}>
               <View style={styles.centeredView}>
@@ -156,9 +156,9 @@ export default function getPositiveCasesCountAPI() {
                     <Text style={{padding: 3}}>Choose District:</Text>
 
                     <DropDownPicker
-                      items={districtName.map(item => ({
-                        label: item,
-                        value: item,
+                      items={districtNameList.map(item => ({
+                        label: item.districtNames,
+                        value: item.districtNames,
                       }))}
                       defaultValue={'Linz-Land'}
                       placeholder="choose a district"
@@ -166,6 +166,7 @@ export default function getPositiveCasesCountAPI() {
                       style={{backgroundColor: '#fafafa'}}
                       itemStyle={{
                         justifyContent: 'flex-start',
+                       
                       }}
                       dropDownStyle={{backgroundColor: '#fafafa'}}
                       searchable={true}
@@ -173,8 +174,8 @@ export default function getPositiveCasesCountAPI() {
                       onChangeItem={item => setSelectedDistrictName(item.value)}
                     />
                   </View>
-                  <View style={{padding: 3}}>
-                    <Text style={{padding: 3}}>Choose Year:</Text>
+                  <View style={styles.parametersRow}>
+                    <Text style={{paddingTop:5, padding:5}}>Choose Year:</Text>
                     <RadioForm
                       radio_props={chooseYear}
                       initial={2021}
@@ -182,8 +183,8 @@ export default function getPositiveCasesCountAPI() {
                       onPress={value => setYear(value)}
                     />
                   </View>
-                  <View style={{padding: 3}}>
-                    <Text style={{padding: 3}}>Choose Data Interval:</Text>
+                  <View style={styles.parametersRow}>
+                    <Text style={{paddingTop:6,padding: 3}}>Data Interval:</Text>
                     <ChonseSelect
                       height={35}
                       data={dataInterval}
@@ -244,7 +245,7 @@ export default function getPositiveCasesCountAPI() {
             width={390}
             height={400}
             domainPadding={{y: [0, 10]}}
-            padding={{top: 30, left: 70, right: 30, bottom: 70}}
+            padding={{top: 60, left: 70, right: 30, bottom: 60}}
             containerComponent={
               <VictoryZoomVoronoiContainer
                 zoomDimension="x"
@@ -313,9 +314,9 @@ export default function getPositiveCasesCountAPI() {
           <VictoryChart
             domainPadding={{y: [0, 10]}}
             width={380}
-            height={200}
+            height={160}
             scale={{x: 'linear'}}
-            padding={{top: 10, left: 60, right: 10, bottom: 119}}
+            padding={{top: 30, left: 60, right: 10, bottom: 50}}
             containerComponent={
               <VictoryBrushContainer
                 responsive={false}
@@ -392,8 +393,8 @@ export default function getPositiveCasesCountAPI() {
                       onChangeItem={item => setSelectedDistrictName(item.value)}
                     />
                   </View>
-                  <View style={{padding: 3}}>
-                    <Text style={{padding: 3}}>Choose Year:</Text>
+                  <View style={styles.parametersRow}>
+                    <Text style={{paddingTop:5, padding:5}}>Choose Year:</Text>
                     <RadioForm
                       radio_props={chooseYear}
                       initial={2021}
@@ -401,8 +402,8 @@ export default function getPositiveCasesCountAPI() {
                       onPress={value => setYear(value)}
                     />
                   </View>
-                  <View style={{padding: 3}}>
-                    <Text style={{padding: 3}}>Choose Data Interval:</Text>
+                  <View style={styles.parametersRow}>
+                    <Text style={{paddingTop:6, padding:5}}>Data Interval:</Text>
                     <ChonseSelect
                       height={35}
                       data={dataInterval}
@@ -468,6 +469,7 @@ export default function getPositiveCasesCountAPI() {
               theme={VictoryTheme.material}
               width={350}
               height={450}
+              style={{data: {fill: 'teal'}}}
               data={districtWisePositiveCases}
               x={'YearlyInterval'}
               y={'AnzahlFaelle'}
@@ -526,8 +528,8 @@ export default function getPositiveCasesCountAPI() {
 const styles = StyleSheet.create({
   container: {
     //flex: 1,
-    flex: 0.5,
-    paddingTop: 13,
+    flex: 1,
+    paddingTop: 0,
   },
   row: {
     flexDirection: 'row',
@@ -536,12 +538,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  parametersRow:{
+    flexDirection: 'row',
+  },
+
   centeredView: {
     flex: 1,
     //justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 250,
-    //padding: '10',
+    marginTop: 100,
+    //padding: 10,
   },
   fixToText: {
     flexDirection: 'row',
@@ -551,7 +557,7 @@ const styles = StyleSheet.create({
   modalView: {
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 20,
+    padding: 10,
     //alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -616,7 +622,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     textAlign: 'center',
-    paddingTop: 15,
+    paddingTop: 20,
   },
   subHeading: {
     textAlign: 'center',

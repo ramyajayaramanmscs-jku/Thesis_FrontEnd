@@ -8,6 +8,7 @@ import {
   useColorScheme,
   View,
   Dimensions,
+  
   useWindowDimensions,
 } from 'react-native';
 import getPositiveCasesCountAPI from './getDistrictData';
@@ -24,7 +25,7 @@ export default function getAllCharts() {
     {key: 'vaccine', title: 'Vaccine'},
     {key: 'reff', title: 'R-Effective'},
   ]);
-
+ 
   const renderScene = SceneMap({
     cases: getPositiveCasesCountAPI,
     vaccine: getFullyVaccinatedCountAPI,
@@ -53,7 +54,7 @@ export default function getAllCharts() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 14,
+    paddingTop: 15,
     height: 100,
   },
   indicator: {

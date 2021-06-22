@@ -35,13 +35,13 @@ export default function getFullyVaccinatedCountAPI() {
   const [loading, setLoading] = useState(null);
   const [countryWiseVaccCount, setcountryWiseVaccCount] = useState([]);
   const [selectedStateName, setSelectedStateName] = useState([]);
-  const [stateName, setStateName] = useState(['Wien']);
+  const [stateNameList, setStateName] = useState(['Wien']);
   const [year, setYear] = useState('2021');
-  const [interval, setInterval] = useState('monthly');
+  const [interval, setInterval] = useState('Monthly');
   const [url, setUrl] = useState({
     stateName: 'Wien',
     year: 2021,
-    interval: 'monthly',
+    interval: 'Monthly',
   });
   /* const encodedDistrict = encodeURIComponent(selectedStateName);
   const encodedYear = encodeURIComponent(year);
@@ -59,32 +59,32 @@ export default function getFullyVaccinatedCountAPI() {
   useEffect(() => {
     async function getVaccinationData() {
       await fetch(
-        `https://ecfd241ea67c.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
+        `https://527e7d26efd6.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setcountryWiseVaccCount(json.data))
         .catch(error => console.error(error))
         .finally(() => setLoading(false), []);
     }
-    async function getDistrictNames() {
-      await fetch('https://ecfd241ea67c.ngrok.io/api/dropdownvalues')
+    async function getStateNames() {
+      await fetch('https://527e7d26efd6.ngrok.io/api/dropdownvalues')
         .then(response => response.json())
-        .then(json => setStateName(json))
+        .then(json => setStateName(json.States))
         .catch(error => console.error(error))
         .finally(() => setLoading(false));
     }
     getVaccinationData();
-    // getDistrictNames();
+    getStateNames();
   }, [url]);
 
-  const url1 = `https://ecfd241ea67c.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`;
+  //const url1 = `https://ecfd241ea67c.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`;
 
   const updateUrl = () => {
     if ((year != null) & (interval != null))
       setUrl(url => {
         return {
           ...url,
-          stateName: 'Wien',
+          stateName: selectedStateName,
           year: year,
           interval: interval,
         };
@@ -97,16 +97,16 @@ export default function getFullyVaccinatedCountAPI() {
 
   const dataInterval = [
     {
-      value: 'weekly',
-      label: 'weekly',
+      value: 'Weekly',
+      label: 'week',
     },
     {
-      value: 'monthly',
-      label: 'monthly',
+      value: 'Monthly',
+      label: 'month',
     },
     {
-      value: 'yearly',
-      label: 'yearly',
+      value: 'Yearly',
+      label: 'year',
     },
   ];
   // console.log(encodedDistrict, encodedYear, encodedInterval);
@@ -114,21 +114,7 @@ export default function getFullyVaccinatedCountAPI() {
   return (
     <SafeAreaProvider>
       <View style={styles.container}>
-        {/* <Header
-        backgroundColor="#005fff"
-        leftComponent={{icon: 'menu', color: '#fff'}}
-        centerComponent={{
-          text: ' Vaccination Data',
-          style: {color: '#fff', fontSize: 16, fontWeight: 'bold'},
-          color: '#fff',
-          fontSize: 14,
-          fontWeight: 'bold',
-        }}
-        rightComponent={{
-          icon: 'settings',
-          color: '#fff',
-        }}
-      /> */}
+       <View>
         <Modal
           animationType="slide"
           transparent={true}
@@ -143,7 +129,7 @@ export default function getFullyVaccinatedCountAPI() {
                 <Text style={{padding: 3}}>Choose State:</Text>
 
                 <DropDownPicker
-                  items={stateName.map(item => ({label: item, value: item}))}
+                  items={stateNameList.map(item => ({label: item.stateNames, value: item.stateNames}))}
                   defaultValue={'Oberösterreich'}
                   placeholder="choose a state"
                   containerStyle={{height: 40}}
@@ -157,8 +143,8 @@ export default function getFullyVaccinatedCountAPI() {
                   onChangeItem={item => setSelectedStateName(item.value)}
                 />
               </View>
-              <View style={{padding: 3}}>
-                <Text style={{padding: 3}}>Choose Data Interval:</Text>
+              <View style={styles.parametersRow}>
+                <Text style={{paddingTop:6, padding:3}}>Data Interval:</Text>
                 <ChonseSelect
                   height={35}
                   data={dataInterval}
@@ -182,67 +168,103 @@ export default function getFullyVaccinatedCountAPI() {
             </View>
           </View>
         </Modal>
-        <Button
-          buttonStyle={styles.normalButton}
-          type="solid"
-          icon={{
-            name: 'settings',
-            size: 15,
-            color: 'white',
-          }}
-          iconRight="true"
-          title="chart"
-          onPress={() => setModalVisible(true)}
-        />
-        {/*  <Text>{url1}</Text> */}
+        <View style={styles.row}>
+              <View>
+                <Text style={styles.heading}>
+                  Vaccination Count {'\n'}
+                </Text>
+              </View>
+              <View style={{alignContent: 'flex-end'}}>
+                <Button
+                  buttonStyle={styles.normalButton}
+                  type="solid"
+                  icon={{
+                    name: 'settings',
+                    size: 18,
+                    color: 'white',
+                  }}
+                  iconRight="true"
+                  title="chart"
+                  onPress={() => setModalVisible(true)}
+                />
+              </View>
+            </View>
+            <Text style={styles.subHeading}>{url.stateName}</Text>
+        </View>
+       
         <VictoryChart
           theme={VictoryTheme.material}
-          width={400}
-          height={350}
-          padding={{top: 50, left: 90, right: 30, bottom: 100}}
+          width={390}
+          height={400}
+          domainPadding={{x:[10,0]}}
+          padding={{top: 60, left: 60, right: 30, bottom: 60}}
           containerComponent={
             <VictoryZoomVoronoiContainer
               zoomDimension="x"
               zoomDomain={zoomDomain}
               onZoomDomainChange={handleZoom}
               labels={({datum}) =>
-                `vaccinated: ${datum.GemeldeteImpfungenLaender},Interval:${datum.Interval}`
-              }
+                `vaccinated: ${datum.GemeldeteImpfungenLaender}`}
+                labelComponent={<VictoryTooltip />}
+              
             />
           }>
-          <VictoryAxis fixLabelOverlap />
-          <VictoryAxis dependentAxis />
+        
           <VictoryAxis
             dependentAxis
+            fixLabelOverlap={true}
             label={'Vaccination Count'}
+           // tickValues={countryWiseVaccCount}
+           tickFormat={(t)=>`${Math.round(t)/1000000}M`}
             style={{
               axis: {stroke: 'black'},
-              ticks: {stroke: 'purple', size: 5},
-              axisLabel: {padding: 80},
+              ticks: {stroke: 'purple'},
+              
+              axisLabel: {
+                fontSize: 15,
+                fontWeight: 'bold',
+                fill: 'black',
+                padding: 40,
+            },
+            tickLabels: {
+              fill: 'black',
+              fontSize: 13,
+            }
             }}
           />
           <VictoryAxis
             independentAxis
-            label={'Interval'}
+            fixLabelOverlap={true}
+            label={url.interval + '-' + url.year}
             style={{
               axis: {stroke: 'black'},
-              ticks: {stroke: 'purple', size: 5},
-              axisLabel: {padding: 30},
+              ticks: {stroke: 'black'},
+              axisLabel: {padding: 30,
+                fontSize: 15,
+                fontWeight: 'bold',
+                fill: 'black',
+              },
+              tickLabels: {
+                fill: 'black',
+                fontSize: 13,
+              },
+              label: {fontsize: 15},
             }}
           />
-          <VictoryGroup colorScale={['purple']}>
+         
             <VictoryBar
+             style={{ data: { fill: "purple" } }}
               data={countryWiseVaccCount}
               x={'Interval'}
               y={'GemeldeteImpfungenLaender'}
             />
-          </VictoryGroup>
+         
         </VictoryChart>
         <VictoryChart
-          width={350}
-          height={100}
+          width={380}
+          height={160}
           scale={{x: 'linear'}}
-          padding={{top: 10, left: 80, right: 30, bottom: 45}}
+          padding={{top: 30, left: 80, right: 30, bottom: 50}}
           containerComponent={
             <VictoryBrushContainer
               responsive={false}
@@ -252,15 +274,30 @@ export default function getFullyVaccinatedCountAPI() {
               onBrushDomainChange={handleBrush}
             />
           }>
-          {/*  <VictoryAxis
-          tickValues={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-          tickFormat={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-          label="Interval"
-        /> */}
+          <VictoryAxis
+              independentAxis
+              fixLabelOverlap={true}
+              label={url.interval + '-' + url.year}
+              style={{
+                axis: {stroke: 'black'},
+                ticks: {stroke: 'black'},
+
+                axisLabel: {
+                  padding: 30,
+                  fontSize: 15,
+                  fontWeight: 'bold',
+                  fill: 'black',
+                },
+                tickLabels: {
+                  fill: 'black',
+                  fontSize: 13,
+                },
+                label: {fontsize: 15},
+              }}
+            />
           <VictoryBar
-            style={{
-              data: {stroke: 'teal'},
-            }}
+            style={{ data: { fill: "purple" } }}
+  
             data={countryWiseVaccCount}
             x={'Interval'}
             y={'GemeldeteImpfungenLaender'}
@@ -276,15 +313,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
 
-    paddingTop: 13,
+    paddingTop: 3,
     backgroundColor: '#eeeeee',
   },
   centeredView: {
     flex: 1,
     //justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 250,
+    marginTop: 100,
     //padding: '10',
+  },
+  row: {
+    flexDirection: 'row',
+   
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  parametersRow:{
+    flexDirection: 'row',
   },
   fixToText: {
     flexDirection: 'row',
@@ -311,11 +357,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
+    
   },
   normalButton: {
-    width: 100,
-    borderRadius: 20,
-    padding: 10,
+    width: 70,
+    height: 30,
+    borderRadius: 50,
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingRight: 5,
+    paddingLeft: 0,
   },
   buttonOpen: {
     backgroundColor: '#F194FF',
@@ -343,5 +394,18 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  heading: {
+    fontSize: 15,
+    color: 'black',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingTop: 20,
+  },
+  subHeading: {
+    textAlign: 'center',
+    fontSize: 15,
+    color: 'black',
+    fontWeight: 'bold',
   },
 });
