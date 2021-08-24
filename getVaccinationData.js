@@ -59,7 +59,8 @@ export default function getFullyVaccinatedCountAPI() {
   useEffect(() => {
     async function getVaccinationData() {
       await fetch(
-        `https://527e7d26efd6.ngrok.io/api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
+        `https://72a08c72de06.ngrok.io
+        /api/Vaccination/?statename=${url.stateName}&year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setcountryWiseVaccCount(json.data))
@@ -67,7 +68,7 @@ export default function getFullyVaccinatedCountAPI() {
         .finally(() => setLoading(false), []);
     }
     async function getStateNames() {
-      await fetch('https://527e7d26efd6.ngrok.io/api/dropdownvalues')
+      await fetch('https://72a08c72de06.ngrok.io/api/dropdownvalues')
         .then(response => response.json())
         .then(json => setStateName(json.States))
         .catch(error => console.error(error))
@@ -114,89 +115,92 @@ export default function getFullyVaccinatedCountAPI() {
   return (
     <SafeAreaProvider>
       <View style={styles.container}>
-       <View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            //Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={{padding: 3}}>
-                <Text style={{padding: 3}}>Choose State:</Text>
+        <View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              //Alert.alert('Modal has been closed.');
+              setModalVisible(!modalVisible);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <View style={{padding: 3}}>
+                  <Text style={{padding: 3}}>Choose State:</Text>
 
-                <DropDownPicker
-                  items={stateNameList.map(item => ({label: item.stateNames, value: item.stateNames}))}
-                  defaultValue={'Oberösterreich'}
-                  placeholder="choose a state"
-                  containerStyle={{height: 40}}
-                  style={{backgroundColor: '#fafafa'}}
-                  itemStyle={{
-                    justifyContent: 'flex-start',
-                  }}
-                  dropDownStyle={{backgroundColor: '#fafafa'}}
-                  searchable={true}
-                  searchablePlaceholder="Search for a state"
-                  onChangeItem={item => setSelectedStateName(item.value)}
-                />
+                  <DropDownPicker
+                    items={stateNameList.map(item => ({
+                      label: item.stateNames,
+                      value: item.stateNames,
+                    }))}
+                    defaultValue={'Oberösterreich'}
+                    placeholder="choose a state"
+                    containerStyle={{height: 40}}
+                    style={{backgroundColor: '#fafafa'}}
+                    itemStyle={{
+                      justifyContent: 'flex-start',
+                    }}
+                    dropDownStyle={{backgroundColor: '#fafafa'}}
+                    searchable={true}
+                    searchablePlaceholder="Search for a state"
+                    onChangeItem={item => setSelectedStateName(item.value)}
+                  />
+                </View>
+                <View style={styles.parametersRow}>
+                  <Text style={{paddingTop: 6, padding: 3}}>
+                    Data Interval:
+                  </Text>
+                  <ChonseSelect
+                    height={35}
+                    data={dataInterval}
+                    initValue={interval}
+                    onPress={item => setInterval(item.value)}
+                  />
+                </View>
+                <View style={styles.fixToText}>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={styles.textStyle}>Hide Modal</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    color="#005fff"
+                    onPress={updateUrl}>
+                    <Text style={styles.textStyle}>chart data</Text>
+                  </Pressable>
+                </View>
               </View>
-              <View style={styles.parametersRow}>
-                <Text style={{paddingTop:6, padding:3}}>Data Interval:</Text>
-                <ChonseSelect
-                  height={35}
-                  data={dataInterval}
-                  initValue={interval}
-                  onPress={item => setInterval(item.value)}
-                />
-              </View>
-              <View style={styles.fixToText}>
-                <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={() => setModalVisible(!modalVisible)}>
-                  <Text style={styles.textStyle}>Hide Modal</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  color="#005fff"
-                  onPress={updateUrl}>
-                  <Text style={styles.textStyle}>chart data</Text>
-                </Pressable>
-              </View>
+            </View>
+          </Modal>
+          <View style={styles.row}>
+            <View>
+              <Text style={styles.heading}>Vaccination Count {'\n'}</Text>
+            </View>
+            <View style={{alignContent: 'flex-end'}}>
+              <Button
+                buttonStyle={styles.normalButton}
+                type="solid"
+                icon={{
+                  name: 'settings',
+                  size: 18,
+                  color: 'white',
+                }}
+                iconRight="true"
+                title="chart"
+                onPress={() => setModalVisible(true)}
+              />
             </View>
           </View>
-        </Modal>
-        <View style={styles.row}>
-              <View>
-                <Text style={styles.heading}>
-                  Vaccination Count {'\n'}
-                </Text>
-              </View>
-              <View style={{alignContent: 'flex-end'}}>
-                <Button
-                  buttonStyle={styles.normalButton}
-                  type="solid"
-                  icon={{
-                    name: 'settings',
-                    size: 18,
-                    color: 'white',
-                  }}
-                  iconRight="true"
-                  title="chart"
-                  onPress={() => setModalVisible(true)}
-                />
-              </View>
-            </View>
-            <Text style={styles.subHeading}>{url.stateName}</Text>
+          <Text style={styles.subHeading}>{url.stateName}</Text>
         </View>
-       
+
         <VictoryChart
           theme={VictoryTheme.material}
           width={390}
           height={400}
-          domainPadding={{x:[10,0]}}
+          domainPadding={{x: [10, 0]}}
           padding={{top: 60, left: 60, right: 30, bottom: 60}}
           containerComponent={
             <VictoryZoomVoronoiContainer
@@ -204,32 +208,31 @@ export default function getFullyVaccinatedCountAPI() {
               zoomDomain={zoomDomain}
               onZoomDomainChange={handleZoom}
               labels={({datum}) =>
-                `vaccinated: ${datum.GemeldeteImpfungenLaender}`}
-                labelComponent={<VictoryTooltip />}
-              
+                `vaccinated: ${datum.GemeldeteImpfungenLaender}`
+              }
+              labelComponent={<VictoryTooltip />}
             />
           }>
-        
           <VictoryAxis
             dependentAxis
             fixLabelOverlap={true}
             label={'Vaccination Count'}
-           // tickValues={countryWiseVaccCount}
-           tickFormat={(t)=>`${Math.round(t)/1000000}M`}
+            // tickValues={countryWiseVaccCount}
+            tickFormat={t => `${Math.round(t) / 1000000}M`}
             style={{
               axis: {stroke: 'black'},
               ticks: {stroke: 'purple'},
-              
+
               axisLabel: {
                 fontSize: 15,
                 fontWeight: 'bold',
                 fill: 'black',
                 padding: 40,
-            },
-            tickLabels: {
-              fill: 'black',
-              fontSize: 13,
-            }
+              },
+              tickLabels: {
+                fill: 'black',
+                fontSize: 13,
+              },
             }}
           />
           <VictoryAxis
@@ -239,7 +242,8 @@ export default function getFullyVaccinatedCountAPI() {
             style={{
               axis: {stroke: 'black'},
               ticks: {stroke: 'black'},
-              axisLabel: {padding: 30,
+              axisLabel: {
+                padding: 30,
                 fontSize: 15,
                 fontWeight: 'bold',
                 fill: 'black',
@@ -251,14 +255,13 @@ export default function getFullyVaccinatedCountAPI() {
               label: {fontsize: 15},
             }}
           />
-         
-            <VictoryBar
-             style={{ data: { fill: "purple" } }}
-              data={countryWiseVaccCount}
-              x={'Interval'}
-              y={'GemeldeteImpfungenLaender'}
-            />
-         
+
+          <VictoryBar
+            style={{data: {fill: 'purple'}}}
+            data={countryWiseVaccCount}
+            x={'Interval'}
+            y={'GemeldeteImpfungenLaender'}
+          />
         </VictoryChart>
         <VictoryChart
           width={380}
@@ -275,29 +278,28 @@ export default function getFullyVaccinatedCountAPI() {
             />
           }>
           <VictoryAxis
-              independentAxis
-              fixLabelOverlap={true}
-              label={url.interval + '-' + url.year}
-              style={{
-                axis: {stroke: 'black'},
-                ticks: {stroke: 'black'},
+            independentAxis
+            fixLabelOverlap={true}
+            label={url.interval + '-' + url.year}
+            style={{
+              axis: {stroke: 'black'},
+              ticks: {stroke: 'black'},
 
-                axisLabel: {
-                  padding: 30,
-                  fontSize: 15,
-                  fontWeight: 'bold',
-                  fill: 'black',
-                },
-                tickLabels: {
-                  fill: 'black',
-                  fontSize: 13,
-                },
-                label: {fontsize: 15},
-              }}
-            />
+              axisLabel: {
+                padding: 30,
+                fontSize: 15,
+                fontWeight: 'bold',
+                fill: 'black',
+              },
+              tickLabels: {
+                fill: 'black',
+                fontSize: 13,
+              },
+              label: {fontsize: 15},
+            }}
+          />
           <VictoryBar
-            style={{ data: { fill: "purple" } }}
-  
+            style={{data: {fill: 'purple'}}}
             data={countryWiseVaccCount}
             x={'Interval'}
             y={'GemeldeteImpfungenLaender'}
@@ -325,11 +327,11 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-   
+
     justifyContent: 'center',
     alignItems: 'center',
   },
-  parametersRow:{
+  parametersRow: {
     flexDirection: 'row',
   },
   fixToText: {
@@ -357,7 +359,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-    
   },
   normalButton: {
     width: 70,

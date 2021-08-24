@@ -63,7 +63,7 @@ export default function getPositiveCasesCountAPI() {
   useEffect(() => {
     async function getDistrictData() {
       await fetch(
-        `https://527e7d26efd6.ngrok.io/api/positivecasesbydistrict/?districtname=${url.districtName}&year=${url.year}&interval=${url.interval}`,
+        `https://72a08c72de06.ngrok.io/api/positivecasesbydistrict/?districtname=${url.districtName}&year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setDistrictWisePositiveCases(json.data))
@@ -71,7 +71,7 @@ export default function getPositiveCasesCountAPI() {
         .finally(() => setLoading(false), [selectedDistrictName]);
     }
     async function getDistrictNames() {
-      await fetch('https://527e7d26efd6.ngrok.io/api/dropdownvalues')
+      await fetch('https://72a08c72de06.ngrok.io/api/dropdownvalues')
         .then(response => response.json())
         .then(json => setDistrictName(json.Districts))
         .catch(error => console.error(error))
@@ -166,7 +166,6 @@ export default function getPositiveCasesCountAPI() {
                       style={{backgroundColor: '#fafafa'}}
                       itemStyle={{
                         justifyContent: 'flex-start',
-                       
                       }}
                       dropDownStyle={{backgroundColor: '#fafafa'}}
                       searchable={true}
@@ -175,7 +174,9 @@ export default function getPositiveCasesCountAPI() {
                     />
                   </View>
                   <View style={styles.parametersRow}>
-                    <Text style={{paddingTop:5, padding:5}}>Choose Year:</Text>
+                    <Text style={{paddingTop: 5, padding: 5}}>
+                      Choose Year:
+                    </Text>
                     <RadioForm
                       radio_props={chooseYear}
                       initial={2021}
@@ -184,7 +185,9 @@ export default function getPositiveCasesCountAPI() {
                     />
                   </View>
                   <View style={styles.parametersRow}>
-                    <Text style={{paddingTop:6,padding: 3}}>Data Interval:</Text>
+                    <Text style={{paddingTop: 6, padding: 3}}>
+                      Data Interval:
+                    </Text>
                     <ChonseSelect
                       height={35}
                       data={dataInterval}
@@ -394,7 +397,9 @@ export default function getPositiveCasesCountAPI() {
                     />
                   </View>
                   <View style={styles.parametersRow}>
-                    <Text style={{paddingTop:5, padding:5}}>Choose Year:</Text>
+                    <Text style={{paddingTop: 5, padding: 5}}>
+                      Choose Year:
+                    </Text>
                     <RadioForm
                       radio_props={chooseYear}
                       initial={2021}
@@ -403,7 +408,9 @@ export default function getPositiveCasesCountAPI() {
                     />
                   </View>
                   <View style={styles.parametersRow}>
-                    <Text style={{paddingTop:6, padding:5}}>Data Interval:</Text>
+                    <Text style={{paddingTop: 6, padding: 5}}>
+                      Data Interval:
+                    </Text>
                     <ChonseSelect
                       height={35}
                       data={dataInterval}
@@ -538,7 +545,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  parametersRow:{
+  parametersRow: {
     flexDirection: 'row',
   },
 

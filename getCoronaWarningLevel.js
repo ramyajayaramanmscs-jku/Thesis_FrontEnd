@@ -16,7 +16,7 @@ export default function getWarningLevelDataAPI() {
     if (loading) {
       async function getDistrictNames() {
         await fetch(
-          `https://1102c8a2eae3.ngrok.io/api/warnLevelRegion/?date=${selecteddate}`,
+          `https://72a08c72de06.ngrok.io/api/warnLevelRegion/?date=${selecteddate}`,
         )
           .then(response => response.json())
           .then(json => setDistrictName(json))
@@ -25,7 +25,7 @@ export default function getWarningLevelDataAPI() {
       }
 
       async function getWarnLevelDates() {
-        await fetch('https://1102c8a2eae3.ngrok.io/api/dropdownvalues')
+        await fetch('https://72a08c72de06.ngrok.io/api/dropdownvalues')
           .then(dropdownresponse => dropdownresponse.json())
           .then(dropdownresponseJson => {
             setFilteredDataSource(dropdownresponseJson.WarnLevelDates);

@@ -63,7 +63,7 @@ export default function getReffectiveValue() {
   useEffect(() => {
     async function getDistrictData() {
       await fetch(
-        `https://527e7d26efd6.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`,
+        `https://72a08c72de06.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`,
       )
         .then(response => response.json())
         .then(json => setREffAustria(json.data))
@@ -71,7 +71,7 @@ export default function getReffectiveValue() {
         .finally(() => setLoading(false), []);
     }
     async function getDistrictNames() {
-      await fetch('https://ecfd241ea67c.ngrok.io/api/dropdownvalues')
+      await fetch('https://72a08c72de06.ngrok.io/api/dropdownvalues')
         .then(response => response.json())
         .then(json => setDistrictName(json))
         .catch(error => console.error(error))
@@ -79,7 +79,7 @@ export default function getReffectiveValue() {
     }
     getDistrictData();
   }, [url]);
- // const sampleurl = `https://ecfd241ea67c.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`;
+  // const sampleurl = `https://ecfd241ea67c.ngrok.io/api/R_eff_Austria/?year=${url.year}&interval=${url.interval}`;
 
   const updateUrl = () => {
     if ((year != null) & (interval != null))
@@ -91,12 +91,12 @@ export default function getReffectiveValue() {
           interval: interval,
         };
       });
-      if (interval == 'Yearly') {
-        setShowLineChart(false);
-      } else {
-        setShowLineChart(true);
-      }
-    };
+    if (interval == 'Yearly') {
+      setShowLineChart(false);
+    } else {
+      setShowLineChart(true);
+    }
+  };
 
   var chooseYear = [
     {label: 2021, value: 2021},
@@ -122,207 +122,8 @@ export default function getReffectiveValue() {
   //console.log('selectedYear',selectedYear,rEffAustria)
   return (
     <SafeAreaProvider>
-        {showLineChart ? (
+      {showLineChart ? (
         <View style={styles.container}>
-         <View>
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              //Alert.alert('Modal has been closed.');
-              setModalVisible(!modalVisible);
-            }}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-               
-                <View style={styles.parametersRow}>
-                  <Text style={{paddingTop:5, padding:5}}>Choose Year:</Text>
-                  <RadioForm
-                    radio_props={chooseYear}
-                    initial={2021}
-                    formHorizontal={true}
-                    onPress={value => setYear(value)}
-                  />
-                </View>
-                <View style={styles.parametersRow}>
-                  <Text style={{paddingTop:6,padding: 3}}>Data Interval:</Text>
-                  <ChonseSelect
-                    height={35}
-                    data={dataInterval}
-                    initValue={interval}
-                    onPress={item => setInterval(item.value)}
-                  />
-                </View>
-                <View style={styles.fixToText}>
-                  <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={styles.textStyle}>Hide Modal</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    color="#005fff"
-                    onPress={updateUrl}>
-                    <Text style={styles.textStyle}>chart data</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </Modal>
-          <View style={styles.row}>
-              <View
-                style={
-                  {
-                    // alignContent: 'flex-start',
-                    //paddingTop: 5,
-                    //paddingRight: 8,
-                  }
-                }>
-                <Text style={styles.heading}>
-                  R_Effective_Value {'\n'}
-                </Text>
-              </View>
-              <View style={{alignContent: 'flex-end'}}>
-                <Button
-                  buttonStyle={styles.normalButton}
-                  type="solid"
-                  icon={{
-                    name: 'settings',
-                    size: 18,
-                    color: 'white',
-                  }}
-                  iconRight="true"
-                  title="chart"
-                  onPress={() => setModalVisible(true)}
-                />
-              </View>
-            </View>
-            <Text style={styles.subHeading}>Austria</Text>
-            </View>
-          <View>
-            <VictoryChart
-              theme={VictoryTheme.material}
-              width={390}
-              height={400}
-              domainPadding={{y: [0, 10]}}
-              padding={{top: 60, left: 70, right: 30, bottom: 60}}
-              containerComponent={
-                <VictoryZoomVoronoiContainer
-                  zoomDimension="x"
-                  zoomDomain={zoomDomain}
-                onZoomDomainChange={handleZoom}
-                  labels={({datum}) =>
-                    `r_eff: ${datum.R_eff}`
-                  }
-                  labelComponent={<VictoryTooltip />}
-                />
-              }>
-              <VictoryAxis
-                dependentAxis
-                fixLabelOverlap={true}
-                label={'R_Effective'}
-                style={{
-                  axis: {stroke: 'black'},
-                  ticks: {stroke: 'black'},
-                  
-                  axisLabel: {
-                    fontSize: 15,
-                    padding: 50,
-                    fontWeight: 'bold',
-                    fill: 'black',},
-                    
-                    tickLabels: {
-                      fill: 'black',
-                      fontSize: 13,
-                    },
-                }}
-              />
-              <VictoryAxis
-              fixLabelOverlap={true}
-                independentAxis
-                label={url.interval + '-' + url.year}
-                style={{
-                  axis: {stroke: 'black'},
-                  ticks: {stroke: 'black'},
-                  
-                  axisLabel: {
-                    padding: 30,
-                    fontSize: 15,
-                    fontWeight: 'bold',
-                    fill: 'black',},
-
-                    tickLabels: {
-                      fill: 'black',
-                      fontSize: 13,
-                    },
-                    label: {fontsize: 15},
-                }}
-              />
-              <VictoryLine
-               
-                style={{
-                  data: {stroke: '#32a846', strokeWidth: 4},
-                  parent: {border: '1px solid #ccc'},
-                }}
-                data={rEffAustria}
-                x={'Interval'}
-                y={'R_eff'}
-                interpolation="catmullRom"
-              />
-            </VictoryChart>
-            
-            <VictoryChart
-            domainPadding={{y: [0, 10]}}
-            width={380}
-            height={160}
-            scale={{x: 'linear'}}
-            padding={{top: 30, left: 60, right: 10, bottom: 50}}
-            containerComponent={
-              <VictoryBrushContainer
-                responsive={false}
-                brushDimension="x"
-                brushStyle={{fill: 'teal', opacity: 0.2}}
-                brushDomain={selectedDomain}
-                onBrushDomainChange={handleBrush}
-              />
-            }>
-               <VictoryAxis
-              independentAxis
-              fixLabelOverlap={true}
-              label={url.interval + '-' + url.year}
-              style={{
-                axis: {stroke: 'black'},
-                ticks: {stroke: 'black'},
-
-                axisLabel: {
-                  padding: 30,
-                  fontSize: 15,
-                  fontWeight: 'bold',
-                  fill: 'black',
-                },
-                tickLabels: {
-                  fill: 'black',
-                  fontSize: 13,
-                },
-                label: {fontsize: 15},
-              }}
-            />
-               <VictoryLine
-              style={{
-                data: {stroke: 'green'},
-              }}
-              data={rEffAustria}
-              x={'Interval'}
-              y={'R_eff'}
-              interpolation="catmullRom"
-            />
-             </VictoryChart>
-          </View>
-        </View>
-        ):(
-          <View style={styles.container}>
           <View>
             <Modal
               animationType="slide"
@@ -334,9 +135,10 @@ export default function getReffectiveValue() {
               }}>
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                 
                   <View style={styles.parametersRow}>
-                    <Text style={{paddingTop:5, padding:5}}>Choose Year:</Text>
+                    <Text style={{paddingTop: 5, padding: 5}}>
+                      Choose Year:
+                    </Text>
                     <RadioForm
                       radio_props={chooseYear}
                       initial={2021}
@@ -345,7 +147,9 @@ export default function getReffectiveValue() {
                     />
                   </View>
                   <View style={styles.parametersRow}>
-                    <Text style={{paddingTop:6, padding:5}}>Data Interval:</Text>
+                    <Text style={{paddingTop: 6, padding: 3}}>
+                      Data Interval:
+                    </Text>
                     <ChonseSelect
                       height={35}
                       data={dataInterval}
@@ -378,9 +182,205 @@ export default function getReffectiveValue() {
                     //paddingRight: 8,
                   }
                 }>
-                <Text style={styles.heading}>
-                  R_Effective_Value {'\n'}
-                </Text>
+                <Text style={styles.heading}>R_Effective_Value {'\n'}</Text>
+              </View>
+              <View style={{alignContent: 'flex-end'}}>
+                <Button
+                  buttonStyle={styles.normalButton}
+                  type="solid"
+                  icon={{
+                    name: 'settings',
+                    size: 18,
+                    color: 'white',
+                  }}
+                  iconRight="true"
+                  title="chart"
+                  onPress={() => setModalVisible(true)}
+                />
+              </View>
+            </View>
+            <Text style={styles.subHeading}>Austria</Text>
+          </View>
+          <View>
+            <VictoryChart
+              theme={VictoryTheme.material}
+              width={390}
+              height={400}
+              domainPadding={{y: [0, 10]}}
+              padding={{top: 60, left: 70, right: 30, bottom: 60}}
+              containerComponent={
+                <VictoryZoomVoronoiContainer
+                  zoomDimension="x"
+                  zoomDomain={zoomDomain}
+                  onZoomDomainChange={handleZoom}
+                  labels={({datum}) => `r_eff: ${datum.R_eff}`}
+                  labelComponent={<VictoryTooltip />}
+                />
+              }>
+              <VictoryAxis
+                dependentAxis
+                fixLabelOverlap={true}
+                label={'R_Effective'}
+                style={{
+                  axis: {stroke: 'black'},
+                  ticks: {stroke: 'black'},
+
+                  axisLabel: {
+                    fontSize: 15,
+                    padding: 50,
+                    fontWeight: 'bold',
+                    fill: 'black',
+                  },
+
+                  tickLabels: {
+                    fill: 'black',
+                    fontSize: 13,
+                  },
+                }}
+              />
+              <VictoryAxis
+                fixLabelOverlap={true}
+                independentAxis
+                label={url.interval + '-' + url.year}
+                style={{
+                  axis: {stroke: 'black'},
+                  ticks: {stroke: 'black'},
+
+                  axisLabel: {
+                    padding: 30,
+                    fontSize: 15,
+                    fontWeight: 'bold',
+                    fill: 'black',
+                  },
+
+                  tickLabels: {
+                    fill: 'black',
+                    fontSize: 13,
+                  },
+                  label: {fontsize: 15},
+                }}
+              />
+              <VictoryLine
+                style={{
+                  data: {stroke: '#32a846', strokeWidth: 4},
+                  parent: {border: '1px solid #ccc'},
+                }}
+                data={rEffAustria}
+                x={'Interval'}
+                y={'R_eff'}
+                interpolation="catmullRom"
+              />
+            </VictoryChart>
+
+            <VictoryChart
+              domainPadding={{y: [0, 10]}}
+              width={380}
+              height={160}
+              scale={{x: 'linear'}}
+              padding={{top: 30, left: 60, right: 10, bottom: 50}}
+              containerComponent={
+                <VictoryBrushContainer
+                  responsive={false}
+                  brushDimension="x"
+                  brushStyle={{fill: 'teal', opacity: 0.2}}
+                  brushDomain={selectedDomain}
+                  onBrushDomainChange={handleBrush}
+                />
+              }>
+              <VictoryAxis
+                independentAxis
+                fixLabelOverlap={true}
+                label={url.interval + '-' + url.year}
+                style={{
+                  axis: {stroke: 'black'},
+                  ticks: {stroke: 'black'},
+
+                  axisLabel: {
+                    padding: 30,
+                    fontSize: 15,
+                    fontWeight: 'bold',
+                    fill: 'black',
+                  },
+                  tickLabels: {
+                    fill: 'black',
+                    fontSize: 13,
+                  },
+                  label: {fontsize: 15},
+                }}
+              />
+              <VictoryLine
+                style={{
+                  data: {stroke: 'green'},
+                }}
+                data={rEffAustria}
+                x={'Interval'}
+                y={'R_eff'}
+                interpolation="catmullRom"
+              />
+            </VictoryChart>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <View>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                //Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <View style={styles.parametersRow}>
+                    <Text style={{paddingTop: 5, padding: 5}}>
+                      Choose Year:
+                    </Text>
+                    <RadioForm
+                      radio_props={chooseYear}
+                      initial={2021}
+                      formHorizontal={true}
+                      onPress={value => setYear(value)}
+                    />
+                  </View>
+                  <View style={styles.parametersRow}>
+                    <Text style={{paddingTop: 6, padding: 5}}>
+                      Data Interval:
+                    </Text>
+                    <ChonseSelect
+                      height={35}
+                      data={dataInterval}
+                      initValue={interval}
+                      onPress={item => setInterval(item.value)}
+                    />
+                  </View>
+                  <View style={styles.fixToText}>
+                    <Pressable
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={() => setModalVisible(!modalVisible)}>
+                      <Text style={styles.textStyle}>Hide Modal</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.button, styles.buttonClose]}
+                      color="#005fff"
+                      onPress={updateUrl}>
+                      <Text style={styles.textStyle}>chart data</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+            <View style={styles.row}>
+              <View
+                style={
+                  {
+                    // alignContent: 'flex-start',
+                    //paddingTop: 5,
+                    //paddingRight: 8,
+                  }
+                }>
+                <Text style={styles.heading}>R_Effective_Value {'\n'}</Text>
               </View>
               <View style={{alignContent: 'flex-end'}}>
                 <Button
@@ -463,8 +463,7 @@ export default function getReffectiveValue() {
             />
           </VictoryChart>
         </View>
-     
-        )}
+      )}
     </SafeAreaProvider>
   );
 }
@@ -482,7 +481,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  parametersRow:{
+  parametersRow: {
     flexDirection: 'row',
   },
 
